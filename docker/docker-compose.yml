@@ -1,0 +1,47 @@
+version: '3.7'
+services:
+  db_mysql:
+    image: mysql:5.7
+    volumes:
+      - ./db_mysql_data:/var/lib/mysql
+    restart: always
+    container_name: otus-hw-db
+    # Формат записи портов: HOST_PORT:CONTAINER_PORT
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=123
+      - MYSQL_DATABASE=otus_hw
+      - MYSQL_USER=admin
+      - MYSQL_PASSWORD=qwe
+    networks:
+      hostnet:
+
+  web-app:
+    build:
+      context: ./../
+      dockerfile: docker/Dockerfile
+    container_name: otus-hw-web-app
+    working_dir: /app
+    volumes:
+      - ./../:/app
+    environment:
+      PHP_IDE_CONFIG: "serverName=Docker"
+    ports:
+      - "2280:22"
+      - "8080:80"
+      - "8000:8000"
+    networks:
+      hostnet:
+
+volumes:
+  db_mysql_data:
+
+networks:
+  hostnet:
+    name: otus-hw-net
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.25.0.0/24

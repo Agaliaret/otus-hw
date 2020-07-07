@@ -1,0 +1,12 @@
+doctrine_migrations:
+    # Для версии doctrine/doctrine-migrations-bundle ^3.0
+    # migrations_paths:
+    #     # namespace is arbitrary but should be different from App\Migrations
+    #     # as migrations classes should NOT be autoloaded
+    #     'DoctrineMigrations': '%kernel.project_dir%/migrations'
+
+    # Для версии doctrine/doctrine-migrations-bundle ^2.1
+    dir_name: '%kernel.project_dir%/src/Migrations'
+    # namespace is arbitrary but should be different from App\Migrations
+    # as migrations classes should NOT be autoloaded
+    namespace: DoctrineMigrations

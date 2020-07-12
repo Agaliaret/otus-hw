@@ -1,0 +1,84 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Friendship requests{% endblock %}
+
+{% block body %}
+    <div class="container-md">
+        <div class="accordion" id="accordionPossibleFriends">
+            <div class="card">
+                <div class="card-header" id="headingPossibleFriendsIncoming">
+                    <h2 class="mb-0">
+                        <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#collapsePossibleFriendsIncoming" aria-expanded="true" aria-controls="collapsePossibleFriendsIncoming">
+                            Incoming friendship requests
+                        </button>
+                    </h2>
+                </div>
+                <div id="collapsePossibleFriendsIncoming" class="collapse show" aria-labelledby="headingPossibleFriendsIncoming" data-parent="#accordionPossibleFriends">
+                    <div class="card-body">
+                        <div class="accordion" id="accordionPossibleFriendsIncoming">
+                            {% if not incoming_friendship_requests %}
+                                No incoming friendship requests
+                            {% endif %}
+                            {% for incoming_friendship_request in incoming_friendship_requests %}
+                                <div class="card">
+                                    <div class="card-header" id="headingPossibleFriendsIncoming{{ loop.index }}">
+                                        <h2 class="mb-0">
+                                            <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#collapsePossibleFriendsIncoming{{ loop.index }}" aria-expanded="false" aria-controls="collapsePossibleFriendsIncoming{{ loop.index }}">
+                                                Name: {{ incoming_friendship_request.name }} {{ incoming_friendship_request.surname }}
+                                            </button>
+                                        </h2>
+                                    </div>
+                                    <div id="collapsePossibleFriendsIncoming{{ loop.index }}" class="collapse" aria-labelledby="headingPossibleFriendsIncoming{{ loop.index }}" data-parent="#accordionPossibleFriendsIncoming">
+                                        <div class="card-body">
+                                            <p>Gender: {{ incoming_friendship_request.gender }}</p>
+                                            <p>Age: {{ incoming_friendship_request.age }}</p>
+                                            <p>City: {{ incoming_friendship_request.city }}</p>
+                                            <p><a href="{{ path('user_page', {'username': incoming_friendship_request.username}) }}">Go to page</a></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header" id="headingPossibleFriendsOutgoing">
+                    <h2 class="mb-0">
+                        <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#collapsePossibleFriendsOutgoing" aria-expanded="true" aria-controls="collapsePossibleFriendsOutgoing">
+                            Outgoing friendship requests
+                        </button>
+                    </h2>
+                </div>
+                <div id="collapsePossibleFriendsOutgoing" class="collapse show" aria-labelledby="headingPossibleFriendsOutgoing" data-parent="#accordionPossibleFriends">
+                    <div class="card-body">
+                        <div class="accordion" id="accordionPossibleFriendsOutgoing">
+                            {% if not outgoing_friendship_requests %}
+                                No outgoing friendship requests
+                            {% endif %}
+                            {% for outgoing_friendship_request in outgoing_friendship_requests %}
+                                <div class="card">
+                                    <div class="card-header" id="headingPossibleFriendsOutgoing{{ loop.index }}">
+                                        <h2 class="mb-0">
+                                            <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#collapsePossibleFriendsOutgoing{{ loop.index }}" aria-expanded="false" aria-controls="collapsePossibleFriendsOutgoing{{ loop.index }}">
+                                                Name: {{ outgoing_friendship_request.name }} {{ outgoing_friendship_request.surname }}
+                                            </button>
+                                        </h2>
+                                    </div>
+                                    <div id="collapsePossibleFriendsOutgoing{{ loop.index }}" class="collapse" aria-labelledby="headingPossibleFriendsOutgoing{{ loop.index }}" data-parent="#accordionPossibleFriendsOutgoing">
+                                        <div class="card-body">
+                                            <p>Gender: {{ outgoing_friendship_request.gender }}</p>
+                                            <p>Age: {{ outgoing_friendship_request.age }}</p>
+                                            <p>City: {{ outgoing_friendship_request.city }}</p>
+                                            <p><a href="{{ path('user_page', {'username': outgoing_friendship_request.username}) }}">Friend's page</a></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

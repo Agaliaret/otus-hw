@@ -1,0 +1,30 @@
+{% extends 'base_form.html.twig' %}
+
+{% block title %}Search results{% endblock %}
+
+{% block body %}
+    <div class="container-md">
+        <h1>Search results:</h1>
+        <div class="accordion" id="accordionFriends">
+            {% for search_result in search_results %}
+                <div class="card">
+                    <div class="card-header" id="heading{{ loop.index }}">
+                        <h2 class="mb-0">
+                            <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#collapse{{ loop.index }}" aria-expanded="true" aria-controls="collapse{{ loop.index }}">
+                                Name: {{ search_result.name }} {{ search_result.surname }}
+                            </button>
+                        </h2>
+                    </div>
+                    <div id="collapse{{ loop.index }}" class="collapse show" aria-labelledby="heading{{ loop.index }}" data-parent="#accordionFriends">
+                        <div class="card-body">
+                            <p>Gender: {{ search_result.gender }}</p>
+                            <p>Age: {{ search_result.age }}</p>
+                            <p>City: {{ search_result.city }}</p>
+                            <p><a href="{{ path('user_page', {'username': search_result.username}) }}">Go to page</a></p>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

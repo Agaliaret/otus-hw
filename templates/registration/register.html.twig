@@ -1,0 +1,47 @@
+{% extends 'base_form.html.twig' %}
+
+{% block title %}Register{% endblock %}
+
+{% block body %}
+    <div class="container-md">
+        {% for flashError in app.flashes('verify_email_error') %}
+            <div class="alert alert-danger" role="alert">{{ flashError }}</div>
+        {% endfor %}
+
+        <h1>Register</h1>
+
+        {{ form_start(registration_form) }}
+        {{ form_errors(registration_form) }}
+        {{ form_row(registration_form.username) }}
+        {{ form_row(registration_form.plainPassword) }}
+        {{ form_row(registration_form.name) }}
+        {{ form_row(registration_form.surname) }}
+        {{ form_row(registration_form.age) }}
+        {{ form_row(registration_form.gender) }}
+        <div class="form-group row">
+            {{ form_label(registration_form.interests) }}
+            <div class="col-sm-10">
+                <ul id="interests-fields-list"
+                    data-prototype="{{ form_widget(registration_form.interests.vars.prototype)|e }}"
+                    data-widget-tags="{{ '<li></li>'|e }}"
+                    data-widget-counter="{{ registration_form.interests|length }}">
+                    {% for interestsField in registration_form.interests %}
+                        <li>
+                            {{ form_errors(interestsField) }}
+                            {{ form_widget(interestsField) }}
+                        </li>
+                    {% endfor %}
+                </ul>
+                <button type="button"
+                        class="btn btn-primary add-another-collection-widget"
+                        data-list-selector="#interests-fields-list">Add another interest</button>
+            </div>
+        </div>
+        {{ form_row(registration_form.city) }}
+        {{ form_row(registration_form._token) }}
+        <button type="submit" class="btn btn-lg btn-primary">Register</button>
+        <span> or </span>
+        <a href="{{ path('app_login') }}" class="btn btn-lg btn-outline-primary" role="button" aria-pressed="true">Sign In</a>
+        {{ form_end(registration_form, {'render_rest': false}) }}
+    </div>
+{% endblock %}

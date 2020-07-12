@@ -1,0 +1,52 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ user_info.name }} {{ user_info.surname }}{% endblock %}
+
+{% block body %}
+    <div class="container-md">
+        <div class="col-lg-12">
+            <h1>{{ user_info.name }} {{ user_info.surname }}'s page</h1>
+
+            <div class="col-lg-10">
+                <p>
+                    <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseUserInfo" aria-expanded="false" aria-controls="collapseUserInfo">
+                        {{ user_info.name }}'s information:
+                    </button>
+                </p>
+                <div class="collapse" id="collapseUserInfo">
+                    <div class="card card-body">
+                        <p>Gender: {{ user_info.gender }}</p>
+                        <p>Age: {{ user_info.age }}</p>
+                        <p>City: {{ user_info.city }}</p>
+                    </div>
+                    <a href="{{ path('edit_user_info') }}" class="btn btn-outline-primary" role="button" aria-pressed="true">Edit information</a>
+                </div>
+
+                <p>
+                    <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseUserInterests" aria-expanded="false" aria-controls="collapseUserInterests">
+                        {{ user_info.name }}'s interests:
+                    </button>
+                </p>
+                <div class="collapse" id="collapseUserInterests">
+                    <div class="card card-body">
+                        {% for interest in user_interests %}
+                            <p>{{ interest }}</p>
+                        {% endfor %}
+                    </div>
+                    <a href="{{ path('edit_user_info') }}" class="btn btn-outline-primary" role="button" aria-pressed="true">Edit information</a>
+                </div>
+            </div>
+            <div class="col-lg-10">
+                <p>
+                    <a href="{{ path('user_friends', {'username': username}) }}">{{ user_info.name }}'s friends</a>
+                    {% if is_user_added_to_friends == true %}
+                        ({{ user_info.name }} is in your friends list)
+                    {% endif %}
+                </p>
+                {% if is_current_user_page == false and is_user_added_to_friends == false %}
+                    <p><a href="{{ path('add_user_to_friends', {'username': username}) }}" class="btn btn-lg btn-outline-primary" role="button" aria-pressed="true">Add {{ user_info.name }} to friends</a></p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

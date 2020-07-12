@@ -1,0 +1,30 @@
+{% extends 'base_form.html.twig' %}
+
+{% block title %}{{ user_info.name }} {{ user_info.surname }}'s friends{% endblock %}
+
+{% block body %}
+    <div class="container-md">
+        <h1>{{ user_info.name }} {{ user_info.surname }}'s friends:</h1>
+        <div class="accordion" id="accordionFriends">
+            {% for friend in friends_list %}
+                <div class="card">
+                    <div class="card-header" id="heading{{ loop.index }}">
+                        <h2 class="mb-0">
+                            <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#collapse{{ loop.index }}" aria-expanded="true" aria-controls="collapse{{ loop.index }}">
+                                Name: {{ friend.name }} {{ friend.surname }}
+                            </button>
+                        </h2>
+                    </div>
+                    <div id="collapse{{ loop.index }}" class="collapse show" aria-labelledby="heading{{ loop.index }}" data-parent="#accordionFriends">
+                        <div class="card-body">
+                            <p>Gender: {{ friend.gender }}</p>
+                            <p>Age: {{ friend.age }}</p>
+                            <p>City: {{ friend.city }}</p>
+                            <p><a href="{{ path('user_page', {'username': friend.username}) }}">Friend's page</a></p>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

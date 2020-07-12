@@ -1,0 +1,18 @@
+{% extends 'base_form.html.twig' %}
+
+{% block title %}Search{% endblock %}
+
+{% block body %}
+    <div class="container-md">
+        {{ form_start(user_search_form) }}
+        {{ form_errors(user_search_form) }}
+        {{ form_row(user_search_form.name) }}
+        {{ form_row(user_search_form.surname) }}
+        {{ form_row(user_search_form.ageFrom) }}
+        {{ form_row(user_search_form.ageTo) }}
+        {{ form_row(user_search_form.gender) }}
+        {{ form_row(user_search_form.city) }}
+        <button type="submit" class="btn btn-lg btn-primary">Search</button>
+        {{ form_end(user_search_form) }}
+    </div>
+{% endblock %}

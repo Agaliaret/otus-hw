@@ -1,0 +1,42 @@
+{% extends 'base_form.html.twig' %}
+
+{% block title %}Edit your info{% endblock %}
+
+{% block body %}
+    <div class="container-md">
+        {% for flashError in app.flashes('verify_email_error') %}
+            <div class="alert alert-danger" role="alert">{{ flashError }}</div>
+        {% endfor %}
+
+        <h1>Edit personal info</h1>
+
+        {{ form_start(edit_user_info_form) }}
+        {{ form_errors(edit_user_info_form) }}
+        {{ form_row(edit_user_info_form.name) }}
+        {{ form_row(edit_user_info_form.surname) }}
+        {{ form_row(edit_user_info_form.age) }}
+        {{ form_row(edit_user_info_form.gender) }}
+        <div class="form-group row">
+            {{ form_label(edit_user_info_form.interests) }}
+            <div class="col-sm-10">
+                <ul id="interests-fields-list"
+                    data-prototype="{{ form_widget(edit_user_info_form.interests.vars.prototype)|e }}"
+                    data-widget-tags="{{ '<li></li>'|e }}"
+                    data-widget-counter="{{ edit_user_info_form.interests|length }}">
+                    {% for interestsField in edit_user_info_form.interests %}
+                        <li>
+                            {{ form_errors(interestsField) }}
+                            {{ form_widget(interestsField) }}
+                        </li>
+                    {% endfor %}
+                </ul>
+                <button type="button"
+                        class="btn btn-primary add-another-collection-widget"
+                        data-list-selector="#interests-fields-list">Add another interest</button>
+            </div>
+        </div>
+        {{ form_row(edit_user_info_form.city) }}
+        <button type="submit" class="btn btn-lg btn-primary">Save changes</button>
+        {{ form_end(edit_user_info_form) }}
+    </div>
+{% endblock %}

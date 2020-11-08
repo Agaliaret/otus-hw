@@ -17,4 +17,9 @@
 
 ###> docker ###
 /docker/db_mysql_data/
+/docker/db_zabbix_mysql_data/
+/docker/grafana_data/
+/docker/influxdb_data/
 ###< docker ###
+
+/stress_tests

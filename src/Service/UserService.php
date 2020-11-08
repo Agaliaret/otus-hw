@@ -9,6 +9,7 @@ use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use OtusHw\Exception\UsernameInUseRegistrationException;
 use OtusHw\Exception\UsernameNotFoundException;
 use OtusHw\Security\User;
+use PDO;
 
 class UserService extends AbstractDbConnectionAwareService
 {
@@ -82,7 +83,7 @@ class UserService extends AbstractDbConnectionAwareService
     {
         $stmt = $this->conn->prepare('SELECT * FROM user_info WHERE user_id = :userId;');
         $stmt->execute([':userId' => $userId]);
-        $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
         return is_array($result) ? $result : [];
     }
 
@@ -96,7 +97,7 @@ class UserService extends AbstractDbConnectionAwareService
     {
         $stmt = $this->conn->prepare('SELECT * FROM user_settings WHERE username = :username;');
         $stmt->execute([':username' => $username]);
-        $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
         if (!is_array($result)) {
             throw new UsernameNotFoundException('User with username ' . $username . ' not found');
         }
@@ -147,7 +148,7 @@ SQLSTATEMENT;
 
         $stmt = $this->conn->prepare($sql);
         $stmt->execute([':userId' => $userId]);
-        $result = $stmt->fetchAll(\PDO::FETCH_COLUMN);
+        $result = $stmt->fetchAll(PDO::FETCH_COLUMN);
         return is_array($result) ? $result : [];
     }
 
@@ -166,22 +167,105 @@ SQLSTATEMENT;
         $where = $params = [];
         foreach ($criteria as $key => $value) {
             if (!empty($value)) {
+                $params[':'.$key] = $value;
                 if ($key === 'ageFrom') {
                     $where[] = 'ui.age >= :'.$key;
                 } elseif ($key === 'ageTo') {
                     $where[] = 'ui.age <= :'.$key;
+                } elseif ($key === 'name' || $key === 'surname') {
+                    $where[] = "ui.$key LIKE :$key";
+                    //Для этого случая перезаписываем данные в $params
+                    $params[':'.$key] = $value.'%';
                 } else {
                     $where[] = 'ui.'.$key.' = :'.$key;
                 }
-                $params[':'.$key] = $value;
             }
         }
         if (!empty($where)) {
             $sql .= ' WHERE ' . implode(' AND ', $where);
         }
+        $sql .= ' LIMIT 500';
         $stmt = $this->conn->prepare($sql);
         $stmt->execute($params);
-        $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return is_array($result) ? $result : [];
+    }
+
+    /**
+     * @param array $criteria
+     * @return array|mixed[]
+     * @throws DBALException
+     */
+    public function searchUsersWithCompositeIndices(array $criteria): array
+    {
+        $sql = <<<SQLSTATEMENT
+SELECT us.username, ui.*
+FROM user_info_wci ui
+    INNER JOIN user_settings_wci us ON ui.user_id = us.id
+SQLSTATEMENT;
+        $where = $params = [];
+        foreach ($criteria as $key => $value) {
+            if (!empty($value)) {
+                $params[':'.$key] = $value;
+                if ($key === 'ageFrom') {
+                    $where[] = 'ui.age >= :'.$key;
+                } elseif ($key === 'ageTo') {
+                    $where[] = 'ui.age <= :'.$key;
+                } elseif ($key === 'name' || $key === 'surname') {
+                    $where[] = "ui.$key LIKE :$key";
+                    //Для этого случая перезаписываем данные в $params
+                    $params[':'.$key] = $value.'%';
+                } else {
+                    $where[] = 'ui.'.$key.' = :'.$key;
+                }
+            }
+        }
+        if (!empty($where)) {
+            $sql .= ' WHERE ' . implode(' AND ', $where);
+        }
+        $sql .= ' LIMIT 500';
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute($params);
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return is_array($result) ? $result : [];
+    }
+
+    /**
+     * @param array $criteria
+     * @return array|mixed[]
+     * @throws DBALException
+     */
+    public function searchUsersWithSeparateIndices(array $criteria): array
+    {
+        $sql = <<<SQLSTATEMENT
+SELECT us.username, ui.*
+FROM user_info_wsi ui
+    INNER JOIN user_settings_wsi us ON ui.user_id = us.id
+SQLSTATEMENT;
+        $where = $params = [];
+        foreach ($criteria as $key => $value) {
+            if (!empty($value)) {
+                $params[':'.$key] = $value;
+                if ($key === 'ageFrom') {
+                    $where[] = 'ui.age >= :'.$key;
+                } elseif ($key === 'ageTo') {
+                    $where[] = 'ui.age <= :'.$key;
+                } elseif ($key === 'name' || $key === 'surname') {
+                    $where[] = "ui.$key LIKE :$key";
+                    //Для этого случая перезаписываем данные в $params
+                    $params[':'.$key] = $value.'%';
+                } else {
+                    $where[] = 'ui.'.$key.' = :'.$key;
+                }
+            }
+        }
+        if (!empty($where)) {
+            $sql .= ' WHERE ' . implode(' AND ', $where);
+        }
+        $sql .= ' LIMIT 500';
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute($params);
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return is_array($result) ? $result : [];
     }
 

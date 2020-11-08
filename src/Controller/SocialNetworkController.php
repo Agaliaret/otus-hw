@@ -157,6 +157,7 @@ class SocialNetworkController extends AbstractController
      *
      * @param Request $request
      * @return Response
+     * @throws DBALException
      */
     public function searchUser(Request $request): Response
     {
@@ -169,6 +170,62 @@ class SocialNetworkController extends AbstractController
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $searchResults = $this->userService->searchUsers($form->getData());
+            return $this->render('social_network/search_results.html.twig', [
+                'search_results' => $searchResults,
+            ]);
+        }
+
+        return $this->render('social_network/search.html.twig', [
+            'user_search_form' => $form->createView(),
+        ]);
+    }
+
+    /**
+     * @Route("/social_wci/search", name="search_user_wci")
+     *
+     * @param Request $request
+     * @return Response
+     * @throws DBALException
+     */
+    public function searchUserWithCompositeIndices(Request $request): Response
+    {
+        $currentUser = $this->getUser();
+        if ($currentUser === null) {
+            return $this->redirectToRoute('app_login');
+        }
+
+        $form = $this->createForm(UserSearchType::class);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $searchResults = $this->userService->searchUsersWithCompositeIndices($form->getData());
+            return $this->render('social_network/search_results.html.twig', [
+                'search_results' => $searchResults,
+            ]);
+        }
+
+        return $this->render('social_network/search.html.twig', [
+            'user_search_form' => $form->createView(),
+        ]);
+    }
+
+    /**
+     * @Route("/social_wsi/search", name="search_user_wsi")
+     *
+     * @param Request $request
+     * @return Response
+     * @throws DBALException
+     */
+    public function searchUserWithSeparateIndices(Request $request): Response
+    {
+        $currentUser = $this->getUser();
+        if ($currentUser === null) {
+            return $this->redirectToRoute('app_login');
+        }
+
+        $form = $this->createForm(UserSearchType::class);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $searchResults = $this->userService->searchUsersWithSeparateIndices($form->getData());
             return $this->render('social_network/search_results.html.twig', [
                 'search_results' => $searchResults,
             ]);
@@ -233,7 +290,6 @@ class SocialNetworkController extends AbstractController
             'edit_user_info_form' => $form->createView(),
         ]);
     }
-
 
     /**
      * @Route("/social/friends_requests", name="get_friendship_requests")

@@ -12,12 +12,14 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 
 # '&&' divides the commands
 RUN apt-get update && apt-get install -y openssh-server mc \
-    libzip-dev zip libxml2-dev nginx openssl \
+    libzip-dev zip libxml2-dev nginx openssl wget  \
     python-pip && pip install supervisor
 
 RUN docker-php-ext-install bcmath opcache pcntl zip soap pdo_mysql intl && \
     pecl install xdebug-2.9.3 && \
     docker-php-ext-enable xdebug
+
+RUN wget https://repo.zabbix.com/zabbix/5.0/ubuntu/pool/main/z/zabbix-release/zabbix-release_5.0-1+bionic_all.deb && dpkg -i zabbix-release_5.0-1+bionic_all.deb && apt-get update && apt-get install -y zabbix-agent
 
 ### Copy source
 COPY / ${VOLUME_DIR}/
@@ -28,7 +30,9 @@ RUN cp -R ${VOLUME_DIR}/build/nginx/* /etc/nginx && \
     cp -rf ${VOLUME_DIR}/build/supervisor/* /etc/supervisor && \
     # PHP
     cp -rf ${VOLUME_DIR}/build/php/php-fpm.conf /usr/local/etc/php-fpm.conf && \
-    cp -rf ${VOLUME_DIR}/build/php/* /usr/local/etc/php
+    cp -rf ${VOLUME_DIR}/build/php/* /usr/local/etc/php && \
+    # Zabbix
+    cp -rf ${VOLUME_DIR}/build/zabbix/zabbix_agentd.conf /etc/zabbix/zabbix_agentd.conf
 
 # SSH config
 RUN echo 'root:c0mple][Pa$$' | chpasswd && \
@@ -53,6 +57,9 @@ RUN usermod -u 1000 ${VOLUME_USER} && \
     touch ${VOLUME_DIR}/var && \
     chmod -R 775 ${VOLUME_DIR}/var && \
     usermod -a -G ${VOLUME_USER} www-data
+
+# Запускаем Zabbix-агента
+RUN service zabbix-agent start
 
 WORKDIR ${VOLUME_DIR}
 

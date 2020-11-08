@@ -27,6 +27,8 @@ services:
       - ./../:/app
     environment:
       PHP_IDE_CONFIG: "serverName=Docker"
+    sysctls:
+      net.core.somaxconn: 1024
     ports:
       - "2280:22"
       - "8080:80"
@@ -34,8 +36,48 @@ services:
     networks:
       hostnet:
 
+  grafana:
+    image: grafana/grafana:latest
+    container_name: otus-hw-grafana
+    volumes:
+      - ./grafana_data/:/var/lib/grafana
+    ports:
+      - "3000:3000"
+    networks:
+      hostnet:
+
+  influxdb:
+    image: influxdb:1.8
+    container_name: otus-hw-influxdb
+    volumes:
+      - ./influxdb_data/:/var/lib/influxdb
+    environment:
+      - INFLUXDB_DB=jmeterresults
+      - INFLUXDB_ADMIN_USER=root
+      - INFLUXDB_ADMIN_PASSWORD=root_asd_098
+      - INFLUXDB_USER=jmeteruser
+      - INFLUXDB_USER_PASSWORD=123qwe
+    ports:
+      - "8086:8086"
+    networks:
+      hostnet:
+
+  zabbix-server:
+    image: zabbix/zabbix-appliance:alpine-trunk
+    container_name: otus-hw-zabbix-server
+    ports:
+      - "8001:80"
+      - "10051:10051"
+    volumes:
+      - ./db_zabbix_mysql_data:/var/lib/mysql
+    networks:
+      hostnet:
+
 volumes:
   db_mysql_data:
+  grafana_data:
+  influxdb_data:
+  db_zabbix_mysql_data:
 
 networks:
   hostnet:
